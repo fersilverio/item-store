@@ -1,17 +1,18 @@
 package com.api.itemstore.controllers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.api.itemstore.dtos.ItemDto;
 import com.api.itemstore.models.Item;
@@ -45,6 +46,39 @@ public class ItemController {
 
         return ResponseEntity.status(HttpStatus.OK).body(itemO.get());
 
+    }
+
+    @GetMapping("/items")
+    public ResponseEntity<List<Item>> getAllItems() {
+        return ResponseEntity.status(HttpStatus.OK).body(itemRepository.findAll());
+    }
+
+    @PutMapping("/items/{id}")
+    public ResponseEntity<Object> updateOneItem(
+            @PathVariable(value = "id") UUID id,
+            @RequestBody @Valid ItemDto dto) {
+
+        Optional<Item> itemO = itemRepository.findById(id);
+
+        if (itemO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found");
+        }
+
+        var itemModel = itemO.get();
+
+        BeanUtils.copyProperties(dto, itemModel);
+        return ResponseEntity.status(HttpStatus.OK).body(itemRepository.save(itemModel));
+
+    }
+
+    @DeleteMapping("/items/{id}")
+    public ResponseEntity<Object> deleteOneItem(@PathVariable(value = "id") UUID id) {
+        Optional<Item> itemO = itemRepository.findById(id);
+        if (itemO.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found.");
+        }
+        itemRepository.delete(itemO.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Item deleted successfully.");
     }
 
 }
