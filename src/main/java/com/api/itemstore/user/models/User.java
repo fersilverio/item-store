@@ -1,8 +1,15 @@
-package com.api.itemstore.models;
+package com.api.itemstore.user.models;
 
-import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.api.itemstore.user.enums.UserRole;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -20,7 +27,7 @@ public class User implements Serializable {
     private String name;
     private String nickName;
     private String password;
-    private int role = 1;
+    private UserRole role;
     private Date birthDate;
     private Date createdAt = new Date();
     private Date updatedAt = new Date();;
@@ -98,14 +105,14 @@ public class User implements Serializable {
     /**
      * @return int return the role
      */
-    public int getRole() {
+    public UserRole getRole() {
         return role;
     }
 
     /**
      * @param role the role to set
      */
-    public void setRole(int role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 
@@ -149,6 +156,40 @@ public class User implements Serializable {
      */
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == UserRole.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        }
+    }
+
+    @Override
+    public String getUsername() {
+        return nickName;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }

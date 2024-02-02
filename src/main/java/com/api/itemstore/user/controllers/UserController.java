@@ -1,4 +1,4 @@
-package com.api.itemstore.controllers;
+package com.api.itemstore.user.controllers;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.api.itemstore.dtos.UserDto;
-import com.api.itemstore.models.User;
-import com.api.itemstore.repositories.UserRepository;
+import com.api.itemstore.user.dtos.UserDto;
+import com.api.itemstore.user.models.User;
+import com.api.itemstore.user.repositories.UserRepository;
 
 import jakarta.validation.Valid;
 
