@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private UserRole role;
     private Date birthDate;
     private Date createdAt = new Date();
-    private Date updatedAt = new Date();;
+    private Date updatedAt = new Date();
 
     /**
      * @return UUID return the id
