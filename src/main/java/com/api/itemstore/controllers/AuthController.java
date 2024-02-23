@@ -8,7 +8,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.api.itemstore.infrastructure.security.TokenService;
 import com.api.itemstore.user.dtos.AuthDTO;
+import com.api.itemstore.user.dtos.LoginResponseDTO;
 import com.api.itemstore.user.dtos.RegisterDTO;
 import com.api.itemstore.user.models.User;
 import com.api.itemstore.user.repositories.UserRepository;
@@ -27,13 +29,17 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
-    @SuppressWarnings("rawtypes")
+    @Autowired
+    TokenService tokenService;
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         var auth = this.authManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((User) auth.getPrincipal());
+
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     }
 
     @SuppressWarnings("rawtypes")
